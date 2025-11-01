@@ -1,0 +1,60 @@
+############################
+# Java / Maven
+############################
+target/
+*.class
+*.log
+*.jar
+*.war
+*.ear
+
+# Maven local wrapper
+.mvn/
+!/.mvn/wrapper/maven-wrapper.jar
+
+############################
+# IntelliJ IDEA
+############################
+.idea/
+*.iml
+*.ipr
+*.iws
+out/
+
+############################
+# VSCode
+############################
+.vscode/
+
+############################
+# Eclipse
+############################
+.project
+.classpath
+.settings/
+
+############################
+# OS / System Files
+############################
+.DS_Store
+Thumbs.db
+
+############################
+# Node (if frontend exists)
+############################
+node_modules/
+
+############################
+# Application Data Folders
+############################
+# Don't commit uploaded files
+uploads/
+
+# Don't commit local database files
+data/*.db
+data/*.sqlite
+data/*.sqlite3
+
+# Ignore temporary test files
+tmp/
+
