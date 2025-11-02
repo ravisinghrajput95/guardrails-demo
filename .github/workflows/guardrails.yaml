@@ -29,6 +29,24 @@ jobs:
         uses: snyk/actions/setup@806182742461562b67788a64410098c9d9b96adb
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+
+      - name: Run Snyk to check for vulnerabilities
+        continue-on-error: true
+        run: |
+          snyk auth ${{ secrets.SNYK_TOKEN }}
+          snyk test --all-projects --sarif-file-output=.github/snyk.sarif
+  
+      - name: Run Snyk to check for vulnerabilities and generate Html report
+        continue-on-error: true
+        run: |
+          snyk auth ${{ secrets.SNYK_TOKEN }}
+          snyk test --json | snyk-to-html -o results-opensource.html
+            
+      - name: Run Snyk to check for vulnerabilities
+        continue-on-error: true
+        run: |
+          snyk auth ${{ secrets.SNYK_TOKEN }}
+          snyk monitor --all-projects
       - name: Set up Google Cloud auth
         uses: google-github-actions/auth@v3
         with:
@@ -51,11 +69,13 @@ jobs:
       - name: Scan container with Snyk (non-blocking)
         continue-on-error: true
         run: |
+          snyk auth ${{ secrets.SNYK_TOKEN }}
           snyk container test $IMAGE --file=Dockerfile
 
       - name: Upload container scan results to Snyk Dashboard
         continue-on-error: true
         run: |
+          snyk auth ${{ secrets.SNYK_TOKEN }}
           snyk container monitor $IMAGE --file=Dockerfile
 
       - name: Push image to Artifact Registry
