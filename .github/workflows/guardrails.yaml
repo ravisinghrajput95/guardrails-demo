@@ -47,3 +47,14 @@ jobs:
         run: |
           snyk auth ${{ secrets.SNYK_TOKEN }}
           snyk monitor --all-projects
+
+      - name: Build the Docker image
+        run: docker build -t vulndemo:1.0 .
+
+      - name: Run Snyk Container Scan
+        continue-on-error: true
+        run: snyk container test vulndemo:1.0 --file=Dockerfile
+
+      - name: Upload Container Scan Results to Snyk Dashboard
+        continue-on-error: true
+        run: snyk container monitor vulndemo:1.0 --file=Dockerfile
