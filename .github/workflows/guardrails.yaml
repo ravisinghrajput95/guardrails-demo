@@ -80,7 +80,12 @@ jobs:
 
       - name: Push image to Artifact Registry
         run: docker push $IMAGE
-
+        
+      - name: Set up gcloud auth plugin for GKE
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+          install_components: gke-gcloud-auth-plugin
       - name: Get GKE credentials
         run: |
           gcloud container clusters get-credentials ${{ secrets.GKE_CLUSTER_NAME }} \
