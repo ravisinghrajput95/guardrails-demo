@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vulndemo
+  labels:
+    app: vulndemo
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: vulndemo
+  template:
+    metadata:
+      labels:
+        app: vulndemo
+    spec:
+      containers:
+      - name: vulndemo
+        image: REPLACE_WITH_ARTIFACT_REGISTRY_IMAGE
+        ports:
+        - containerPort: 8080
