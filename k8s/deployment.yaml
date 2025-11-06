@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: vulndemo
+  namespace: demo-app
   labels:
     app: vulndemo
 spec:
@@ -16,6 +17,18 @@ spec:
     spec:
       containers:
       - name: vulndemo
-        image: REPLACE_WITH_ARTIFACT_REGISTRY_IMAGE
+        image: us-central1-docker.pkg.dev/PROJECT_ID/app-repo/vulndemo:latest
         ports:
         - containerPort: 8080
+        env:
+          - name: SPRING_DATASOURCE_URL
+            value: jdbc:mysql://mysql.demo-app.svc.cluster.local:3306/vulndb
+          - name: SPRING_DATASOURCE_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: mysql-secret
+                key: mysql-user
+          - name: SPRING_DATASOURCE_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: mysql-secret

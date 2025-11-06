@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mysql-initdb
+  namespace: demo-app
+data:
+  schema.sql: |
+    CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, bio TEXT);
+    INSERT INTO users (name, bio) VALUES ('Ravi', 'DevSecOps'), ('Prashant','Developer');
+    
