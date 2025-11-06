@@ -1,0 +1,33 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: seed-mysql
+  namespace: demo-app
+spec:
+  template:
+    spec:
+      containers:
+      - name: mysql-client
+        image: mysql:5.7
+        command: ["sh", "-c"]
+        args:
+          - |
+            mysql -h mysql -u user -ppassword vulndb <<EOF
+            CREATE TABLE IF NOT EXISTS users (
+              id INT AUTO_INCREMENT PRIMARY KEY,
+              name VARCHAR(255),
+              bio VARCHAR(255)
+            );
+
+            INSERT INTO users (name, bio)
+            VALUES 
+              ('Ravi', 'DevSecOps'),
+              ('Prashant','Developer');
+            EOF
+        env:
+        - name: MYSQL_PWD
+          valueFrom:
+            secretKeyRef:
+              name: mysql-secret
+              key: mysql-password
+      restartPolicy: Never
