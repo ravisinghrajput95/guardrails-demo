@@ -95,8 +95,11 @@ jobs:
       - name: Apply Kubernetes manifests
         run: |
           kubectl apply -f k8s/namespace.yaml
-          kubectl apply -n demo-app -f k8s/deployment.yaml
-          kubectl apply -n demo-app -f k8s/service.yaml
+          kubectl create deployment vulndemo \
+            --image=$IMAGE \
+            -n demo-app \
+            --dry-run=client -o yaml > k8s/generated-deployment.yaml
+          kubectl apply -f k8s/generated-deployment.yaml
 
       - name: Verify Deployment
         run: |
