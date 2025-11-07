@@ -11,28 +11,17 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 
-/**
- * DemoController - intentionally contains insecure examples for DevSecOps demonstrations:
- *  - SQL injection via /user?name=...
- *  - Unsafe file upload via /upload
- *  - Unsafe command execution via /exec
- *  - Unsafe file read via /read
- *
- * For real apps: do NOT use these patterns in production.
- */
 @RestController
 public class DemoController {
 
     @Autowired
     private UserService userService;
 
-    // Simple health check
     @GetMapping("/health")
     public String health() {
         return "OK";
     }
 
-    // Home page to avoid Whitelabel 404 and show useful links
     @GetMapping("/")
     public String home() {
         return "<html><body>"
@@ -41,8 +30,8 @@ public class DemoController {
              + "<ul>"
              + "<li><a href=\"/health\">/health</a></li>"
              + "<li><a href=\"/user?name=Ravi\">/user?name=Ravi</a></li>"
-             + "<li><a href=\"/users\">/users</a> (simple demo page)</li>"
-             + "<li><code>/upload</code> (POST file)</li>"
+             + "<li><a href=\"/users\">/users</a></li>"
+             + "<li><code>/upload</code> (POST)</li>"
              + "<li><code>/exec?cmd=echo hello</code> (RCE demo — do not expose)</li>"
              + "<li><code>/read?file=filename</code> (unsafe file read)</li>"
              + "</ul>"
@@ -50,8 +39,6 @@ public class DemoController {
              + "</body></html>";
     }
 
-    // Simple HTML page showing a couple of users (uses userService.findByName for demo)
-    // This is not optimized and is intentionally simple for demo screenshots.
     @GetMapping("/users")
     public String users() {
         StringBuilder sb = new StringBuilder();
@@ -72,7 +59,6 @@ public class DemoController {
         return sb.toString();
     }
 
-    // 1) SQL injection example via query param
     @GetMapping("/user")
     public String getUser(@RequestParam(value = "name", required = false, defaultValue = "") String name,
                           HttpServletResponse resp) {
@@ -81,11 +67,9 @@ public class DemoController {
             resp.setStatus(404);
             return "User not found";
         }
-        // reflected output without escaping (XSS risk if used in a browser)
         return "<h1>User: " + u.getName() + "</h1><p>Bio: " + u.getBio() + "</p>";
     }
 
-    // 2) Unsafe file upload - no validation of content-type or file name
     @PostMapping("/upload")
     public String upload(@RequestParam("file") MultipartFile file) {
         try {
@@ -103,11 +87,9 @@ public class DemoController {
         }
     }
 
-    // 3) Unsafe command execution (RCE-style demo) — uses Runtime.exec on user input (VERY DANGEROUS)
     @GetMapping("/exec")
     public String execCmd(@RequestParam(value = "cmd", defaultValue = "echo hello") String cmd) {
         try {
-            // DANGEROUS: executes user-provided command
             Process p = Runtime.getRuntime().exec(cmd);
             p.waitFor();
             return "Executed: " + cmd;
@@ -116,7 +98,6 @@ public class DemoController {
         }
     }
 
-    // 4) Read uploaded file (demonstrates file read risk)
     @GetMapping("/read")
     public String readFile(@RequestParam("file") String file) {
         return userService.readFileFromDisk(file);
