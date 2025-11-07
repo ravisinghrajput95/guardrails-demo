@@ -1,39 +1,42 @@
 package com.example.vulndemo.service;
 
-import org.springframework.stereotype.Service;
-import java.sql.*;
 import com.example.vulndemo.model.User;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Service;
+
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.List;
 
 @Service
 public class UserService {
-    private Connection conn;
 
-    public UserService() {
-        try {
-            conn = DriverManager.getConnection("jdbc:sqlite:data/demo.db");
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
-    // Intentionally unsafe: builds SQL via string concatenation (SQL injection)
+    // Row mapper for converting DB rows into User objects
+    private RowMapper<User> userMapper = (rs, rowNum) -> {
+        User u = new User();
+        u.setId(rs.getInt("id"));
+        u.setName(rs.getString("name"));
+        u.setBio(rs.getString("bio"));
+        return u;
+    };
+
+    // Intentionally unsafe SQL query (SQL injection for demo purposes)
     public User findByName(String name) {
         try {
             String sql = "SELECT id, name, bio FROM users WHERE name = '" + name + "' LIMIT 1";
-            Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery(sql);
-            if (rs.next()) {
-                return new User(rs.getInt("id"), rs.getString("name"), rs.getString("bio"));
-            }
-        } catch (SQLException ex) {
-            ex.printStackTrace();
+            List<User> users = jdbcTemplate.query(sql, userMapper);
+            return users.isEmpty() ? null : users.get(0);
+        } catch (Exception e) {
+            return null;
         }
-        return null;
     }
 
-    // Danger: reads file path from DB and returns content (demonstrates file read risk)
+    // Unsafe file read (kept intentionally vulnerable)
     public String readFileFromDisk(String filename) {
         try {
             byte[] all = Files.readAllBytes(Paths.get("uploads/" + filename));
