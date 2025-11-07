@@ -1,46 +1,46 @@
-package com.example.vulndemo.service;
-
-import com.example.vulndemo.model.User;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.List;
 
 @Service
 public class UserService {
 
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbc;
 
-    // Row mapper for converting DB rows into User objects
-    private RowMapper<User> userMapper = (rs, rowNum) -> {
-        User u = new User();
-        u.setId(rs.getInt("id"));
-        u.setName(rs.getString("name"));
-        u.setBio(rs.getString("bio"));
-        return u;
-    };
+    public UserService(JdbcTemplate jdbc) {
+        this.jdbc = jdbc;
+    }
 
-    // Intentionally unsafe SQL query (SQL injection for demo purposes)
     public User findByName(String name) {
         try {
             String sql = "SELECT id, name, bio FROM users WHERE name = '" + name + "' LIMIT 1";
-            List<User> users = jdbcTemplate.query(sql, userMapper);
-            return users.isEmpty() ? null : users.get(0);
+
+            return jdbc.queryForObject(sql, new RowMapper<User>() {
+                @Override
+                public User mapRow(ResultSet rs, int rowNum) throws SQLException {
+                    return new User(
+                            rs.getInt("id"),
+                            rs.getString("name"),
+                            rs.getString("bio")
+                    );
+                }
+            });
+
         } catch (Exception e) {
+            System.out.println("Lookup failed: " + e.getMessage());
             return null;
         }
     }
 
-    // Unsafe file read (kept intentionally vulnerable)
-    public String readFileFromDisk(String filename) {
+    public String readFileFromDisk(String file) {
         try {
-            byte[] all = Files.readAllBytes(Paths.get("uploads/" + filename));
-            return new String(all);
+            byte[] data = Files.readAllBytes(Paths.get("uploads/" + file));
+            return new String(data);
         } catch (Exception e) {
             return "Cannot read file";
         }
