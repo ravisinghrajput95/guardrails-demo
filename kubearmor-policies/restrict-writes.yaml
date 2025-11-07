@@ -11,8 +11,12 @@ spec:
     matchDirectories:
       - dir: /app/
         recursive: true
-        readOnly: true
+        readOnly: true     # default read-only for /app/**
       - dir: /app/uploads/
         recursive: true
-        readOnly: false
+        readOnly: false    # allow writes for uploads
+      - dir: /tmp/
+        recursive: true
+        readOnly: false    # allow Java temp usage
   action: Block
+

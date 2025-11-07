@@ -1,0 +1,22 @@
+apiVersion: security.kubearmor.com/v1
+kind: KubeArmorPolicy
+metadata:
+  name: block-cron-and-systemd-writes
+  namespace: demo-app
+spec:
+  selector:
+    matchLabels:
+      app: vulndemo
+  file:
+    matchDirectories:
+      - dir: /etc/cron.d/
+        recursive: true
+        readOnly: true
+      - dir: /etc/cron.daily/
+        recursive: true
+        readOnly: true
+      - dir: /etc/systemd/
+        recursive: true
+        readOnly: true
+  action: Block
+

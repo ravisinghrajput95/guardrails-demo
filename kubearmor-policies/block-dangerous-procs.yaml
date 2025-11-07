@@ -1,0 +1,27 @@
+apiVersion: security.kubearmor.com/v1
+kind: KubeArmorPolicy
+metadata:
+  name: block-dangerous-procs
+  namespace: demo-app
+spec:
+  selector:
+    matchLabels:
+      app: vulndemo
+  process:
+    matchPaths:
+      - path: /usr/bin/curl
+      - path: /bin/curl
+      - path: /usr/bin/wget
+      - path: /bin/wget
+      - path: /usr/bin/nc
+      - path: /bin/nc
+      - path: /usr/bin/netcat
+      - path: /bin/netcat
+      - path: /bin/busybox
+      - path: /usr/bin/busybox
+      - path: /usr/bin/python
+      - path: /usr/bin/python3
+      - path: /bin/python
+      - path: /bin/python3
+  action: Block
+
