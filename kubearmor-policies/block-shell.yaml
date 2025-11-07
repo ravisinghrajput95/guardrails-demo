@@ -9,8 +9,8 @@ spec:
       app: vulndemo
   process:
     matchPaths:
-      - path: /bin/ash
-      - path: /usr/bin/ash
+      - path: /usr/bin/sh
       - path: /bin/sh
       - path: /bin/bash
+      - path: /usr/bin/bash
   action: Block
