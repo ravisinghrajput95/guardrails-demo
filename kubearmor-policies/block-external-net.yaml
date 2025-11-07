@@ -1,0 +1,14 @@
+apiVersion: security.kubearmor.com/v1
+kind: KubeArmorPolicy
+metadata:
+  name: block-external-network
+  namespace: demo-app
+spec:
+  selector:
+    matchLabels:
+      app: vulndemo
+  network:
+    matchProtocols:
+      - protocol: tcp
+        direction: egress
+  action: Block

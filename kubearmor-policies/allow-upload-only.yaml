@@ -1,0 +1,18 @@
+apiVersion: security.kubearmor.com/v1
+kind: KubeArmorPolicy
+metadata:
+  name: restrict-file-writes
+  namespace: demo-app
+spec:
+  selector:
+    matchLabels:
+      app: vulndemo
+  file:
+    matchDirectories:
+      - dir: /app/
+        recursive: true
+        readOnly: true
+      - dir: /app/uploads/
+        recursive: true
+        readOnly: false
+  action: Block

@@ -1,0 +1,14 @@
+apiVersion: security.kubearmor.com/v1
+kind: KubeArmorPolicy
+metadata:
+  name: block-shell-execution
+  namespace: demo-app
+spec:
+  selector:
+    matchLabels:
+      app: vulndemo
+  process:
+    matchPaths:
+      - path: /bin/sh
+      - path: /bin/bash
+  action: Block

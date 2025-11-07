@@ -1,0 +1,15 @@
+apiVersion: security.kubearmor.com/v1
+kind: KubeArmorPolicy
+metadata:
+  name: block-system-files
+  namespace: demo-app
+spec:
+  selector:
+    matchLabels:
+      app: vulndemo
+  file:
+    matchPaths:
+      - path: /etc/passwd
+      - path: /etc/shadow
+      - path: /etc/ssl/private
+  action: Block
