@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: vulndemo
-        image: us-central1-docker.pkg.dev/PROJECT_ID/app-repo/vulndemo:latest
+        image: ""
         ports:
         - containerPort: 8080
         env:

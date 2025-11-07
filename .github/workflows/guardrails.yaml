@@ -92,10 +92,6 @@ jobs:
           --zone ${{ secrets.GKE_CLUSTER_ZONE }} \
           --project ${{ secrets.GCP_PROJECT_ID }}
 
-      - name: Update deployment image in manifest
-        run: |
-          sed -i "s|REPLACE_WITH_ARTIFACT_REGISTRY_IMAGE|$IMAGE|g" k8s/deployment.yaml
-
       - name: Apply Kubernetes manifests
         run: |
           kubectl apply -f k8s/namespace.yaml
@@ -106,3 +102,10 @@ jobs:
         run: |
           kubectl get pods -n demo-app
           kubectl get svc -n demo-app
+      
+      - name: Update deployment image
+        run: |
+          kubectl set image deployment/vulndemo \
+            vulndemo=$IMAGE \
+            -n demo-app
+        
